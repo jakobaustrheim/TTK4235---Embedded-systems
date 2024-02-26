@@ -5,6 +5,8 @@
 #include "driver/elevio.h"
 #include "driver/start.h"
 #include "driver/move.h"
+#include "driver/utilities.h"
+
 
 int main()
 {
@@ -17,9 +19,9 @@ int main()
 
     while (1)
     {
-        // start_position();
+         start_position();
 
-        // int floor = elevio_floorSensor();
+         int floor = elevio_floorSensor();
 
         // // if(floor == 0){
         // //     elevio_motorDirection(DIRN_UP);
