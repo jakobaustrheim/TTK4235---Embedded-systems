@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#include "elevio.h"
 #include "utilities.h"
 #include "con_load.h"
 
@@ -54,7 +55,7 @@ void add_order() // Sets the value of the given floor and button to one
             {
                 if (b == button)
                 {
-                    o.order[f][b] = 1;
+                    ord.order[f][b] = 1;
                 }
             }
         }
@@ -71,8 +72,19 @@ void remove_order() // Sets the value of the executed order to zero
         {
             for (int b = 0; b < N_BUTTONS; b++)
             {
-                o.order[f][b] = 0;
+                ord.order[f][b] = 0;
             }
         }
+    }
+}
+
+void door() {
+    int current_floor = elevio_floorSensor();
+    if(current_floor != -1)
+    {
+        elevio_doorOpenLamp(1);
+    }
+    else {
+        elevio_doorOpenLamp(0);
     }
 }

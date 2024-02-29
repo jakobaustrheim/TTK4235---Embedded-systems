@@ -3,9 +3,12 @@
 #include <signal.h>
 #include <time.h>
 #include "driver/elevio.h"
-#include "driver/start.h"
+// #include "driver/start.h"
 #include "driver/move.h"
 #include "driver/utilities.h"
+#include "driver/con_load.h"
+
+//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
 
 
 int main()
@@ -19,38 +22,19 @@ int main()
 
     while (1)
     {
-         start_position();
+         //start_position();
 
          int floor = elevio_floorSensor();
 
-        // // if(floor == 0){
-        // //     elevio_motorDirection(DIRN_UP);
-        // // }
-        // if (floor >= 0)
-        // {
-        //     elevio_floorIndicator(floor);
-        // }
+      
+        if (floor >= 0)
+        {
+            elevio_floorIndicator(floor);
+        }
 
-        // // if(floor == N_FLOORS-1){
-        // //     elevio_motorDirection(DIRN_DOWN);
-        // // }
+        add_order();
 
-        // for (int f = 0; f < N_FLOORS; f++)
-        // {
-        //     for (int b = 0; b < N_BUTTONS; b++)
-        //     {
-        //         int btnPressed = elevio_callButton(f, b);
-        //         if (btnPressed == 1) {
-        //             int floor = f;
-        //             ButtonType button = b;
-        //         }
-        //         elevio_buttonLamp(f, b, btnPressed);
-        //     }
-        // }
-
-        // move();
-
-        //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
+        move();
 
         if (elevio_obstruction())
         {
@@ -67,7 +51,7 @@ int main()
             break;
         }
 
-        nanosleep(&(struct timespec){0, 20 * 1000 * 1000}, NULL);
+        //anosleep(&(struct timespec){0, 20 * 1000 * 1000}, NULL);
     }
 
     return 0;
