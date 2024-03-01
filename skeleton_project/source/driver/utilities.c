@@ -10,6 +10,8 @@
 #include "utilities.h"
 #include "con_load.h"
 
+Order ord = {.order = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}}};
+
 int get_floor() // Returns the value of the pressed button
 {
     for (int f = 0; f < N_FLOORS; f++)
