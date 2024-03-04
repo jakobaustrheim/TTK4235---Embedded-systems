@@ -10,7 +10,6 @@
 #include "con_load.h"
 #include "move.h"
 #include "utilities.h"
-#include "start.h"
 
 // void execute_order()
 // {
@@ -29,45 +28,114 @@
 void move()
 {
     int current_floor = elevio_floorSensor();
-    for (int f = 0; f < N_FLOORS; f++)
+    if (elevio_floorSensor() != -1)
     {
-        if (ord.order[f][2])
+
+        for (int f = 0; f < N_FLOORS; f++)
         {
-            if (f < current_floor)
+            add_order();
+            if (ord.order[f][2]) // Sjekker om det er ordre i cab
             {
-                elevio_motorDirection(DIRN_DOWN);
-                for (int i = f; i < current_floor; i++)
+                if (f < current_floor) // Sjekker om det evt er ordre på vei ned mot bestilling
                 {
-                    if (ord.order[i][1] == 1 || ord.order[i][2] == 1)
+                    elevio_motorDirection(DIRN_DOWN);
+                    for (int i = f; i < current_floor; i++)
                     {
-                        // nanosleep(&tim, NULL);
-                        remove_order();
-                    }
-                    {
+                        if ((ord.order[i][1] == 1 || ord.order[i][2] == 1) & current_floor == i)
+                        {
+                            order_execute();
+                        }
                     }
                 }
-            }
 
-            // Tilsvarende logikk som for turer nedover her.
-
-            else if (f > current_floor)
-            {
-                elevio_motorDirection(DIRN_UP);
-                for (int i = current_floor; i < f; i++)
+                else if (f > current_floor) // Sjekker om det evt er ordre på vei opp mot bestilling
                 {
-                    if (ord.order[i][0] == 1 || ord.order[i][2] == 1)
+                    elevio_motorDirection(DIRN_UP);
+                    for (int i = current_floor; i < f; i++)
                     {
-                        // Må legge inn en kode som stopper motoren i gitt mengde tid
-                        // nanosleep(&tim, NULL);
-                        remove_order();
+                        if ((ord.order[i][0] == 1 || ord.order[i][2] == 1) & current_floor == i)
+                        {
+                            order_execute();
+                        }
                     }
                 }
+
+                else // Utfører ordre
+                {
+                    order_execute();
+                }
             }
-            else
+            else if (ord.order[f][0])
             {
-                elevio_motorDirection(DIRN_STOP);
-                remove_order();
+                    if (f < current_floor) // Sjekker om det evt er ordre på vei ned mot bestilling
+                    {
+                        elevio_motorDirection(DIRN_DOWN);
+                        for (int i = f; i < current_floor; i++)
+                        {
+                            if ((ord.order[i][1] == 1 || ord.order[i][2] == 1) & current_floor == i)
+                            {
+                                order_execute();
+                            }
+                        }
+                    }
+
+                    else if (f > current_floor) // Sjekker om det evt er ordre på vei opp mot bestilling
+                    {
+                        elevio_motorDirection(DIRN_UP);
+                        for (int i = current_floor; i < f; i++)
+                        {
+                            if ((ord.order[i][0] == 1 || ord.order[i][2] == 1) & current_floor == i)
+                            {
+                                order_execute();
+                            }
+                        }
+                    }
+
+                    else // Utfører ordre
+                    {
+                        order_execute();
+                    }
+            }
+            else if (ord.order[f][1])
+            {
+                    if (f < current_floor) // Sjekker om det evt er ordre på vei ned mot bestilling
+                    {
+                        elevio_motorDirection(DIRN_DOWN);
+                        for (int i = f; i < current_floor; i++)
+                        {
+                            if ((ord.order[i][1] == 1 || ord.order[i][2] == 1) & current_floor == i)
+                            {
+                                order_execute();
+                            }
+                        }
+                    }
+
+                    else if (f > current_floor) // Sjekker om det evt er ordre på vei opp mot bestilling
+                    {
+                        elevio_motorDirection(DIRN_UP);
+                        for (int i = current_floor; i < f; i++)
+                        {
+                            if ((ord.order[i][0] == 1 || ord.order[i][2] == 1) & current_floor == i)
+                            {
+                                order_execute();
+                            }
+                        }
+                    }
+
+                    else // Utfører ordre
+                    {
+                        order_execute();
+                    }
             }
         }
     }
+
+    // else {
+    //     while (elevio_floorSensor() == -1)
+    //     {
+    //         elevio_motorDirection(DIRN_DOWN);
+    //     }
+    //     elevio_motorDirection(DIRN_STOP);
+    //     move();
+    // }
 }

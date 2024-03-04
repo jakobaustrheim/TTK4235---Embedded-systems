@@ -3,56 +3,63 @@
 #include <signal.h>
 #include <time.h>
 #include "driver/elevio.h"
-// #include "driver/start.h"
 #include "driver/move.h"
 #include "driver/utilities.h"
 #include "driver/con_load.h"
 
 //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
 
+void state_machine(elevator_states state) {
+    switch (state)
+    {
+    case START:
+        start();
+        state = WAITING;
+
+    case WAITING:
+    //vi må while her for å vente på første bestilling før ci går i moving state
+    //add order funker ikke
+     for (int f = 0; f < N_FLOORS; f++){
+        for (int b = 0; b < N_BUTTONS; b++) {
+            int btn_pressed = elevio_callButton(f, b);
+            if (btn_pressed == 1) {
+                add_order();
+            }
+        }
+        }
+        stop();  
+        if (check_order() == 1)
+        {  
+            elevio_buttonLamp(3,1,1);
+            //state = MOVING;
+
+        }
+        else 
+        {
+            //add_order();
+            stop();
+            //elevio_buttonLamp(2,1, 1);
+        }
+
+    case MOVING:
+        //add_order();
+        stop();
+    
+    default:
+        break;
+     }
+}
+
 
 int main()
 {
     elevio_init();
+    elevator_states s = START;
+    while(1) {
+        floor_light();
 
-    printf("=== Example Program ===\n");
-    printf("Press the stop button on the elevator panel to exit\n");
+        state_machine(s);
 
-    // elevio_motorDirection(DIRN_UP);
-
-    while (1)
-    {
-         //start_position();
-
-         int floor = elevio_floorSensor();
-
-      
-        if (floor >= 0)
-        {
-            elevio_floorIndicator(floor);
-        }
-
-        add_order();
-
-        move();
-
-        if (elevio_obstruction())
-        {
-            elevio_stopLamp(1);
-        }
-        else
-        {
-            elevio_stopLamp(0);
-        }
-
-        if (elevio_stopButton())
-        {
-            elevio_motorDirection(DIRN_STOP);
-            break;
-        }
-
-        //anosleep(&(struct timespec){0, 20 * 1000 * 1000}, NULL);
     }
-
     return 0;
 }
