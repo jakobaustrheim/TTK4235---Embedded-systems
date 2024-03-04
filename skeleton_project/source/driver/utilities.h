@@ -5,6 +5,7 @@ typedef struct
     int order[4][3]; //A matrix of four rows representing the four different floors, and thee columns for the three different button-types.
 } Order;
 
+<<<<<<< HEAD
 typedef struct
 {
     int floor;
@@ -23,6 +24,9 @@ typedef enum {
 
 extern Order ord; // Initilizing the matrix with zeroes
 extern called_floor c_f; 
+=======
+extern Order ord; // Initilizing the matrix with zeroes
+>>>>>>> 16b71c25ebb6eec5023b6a763266998f61ff525e
 
 called_floor get_order();
 void add_order();

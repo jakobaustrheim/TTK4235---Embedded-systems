@@ -12,10 +12,14 @@
 
 Order ord = {.order = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}}};
 
+<<<<<<< HEAD
 called_floor c_f;
 
 
 called_floor get_order() // Returns the button-type of the pressed button
+=======
+int get_floor() // Returns the value of the pressed button
+>>>>>>> 16b71c25ebb6eec5023b6a763266998f61ff525e
 {
     for (int f = 0; f < N_FLOORS; f++)
     {
