@@ -19,8 +19,12 @@ void move()
                 int iter = last_floor;
                 while (f != last_floor)
                 {
+                    if (check_button_pressed() == 1) {
+                        add_order(c_f);
+                    }
                     last_floor_func();
                     stop();
+                    floor_light();
                     if (f - last_floor < 0) // Sjekker om det evt er ordre på vei ned mot bestilling
                     {
                         elevio_motorDirection(DIRN_DOWN);

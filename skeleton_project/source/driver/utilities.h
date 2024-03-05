@@ -28,11 +28,12 @@ typedef enum {
 
 } elevator_states;
 
+extern elevator_states s;
+
 extern Order ord; // Creating an instance of the order-matrix
 extern called_floor c_f; 
 extern int last_floor;
 
-// called_floor get_order();
 void add_order(called_floor c);
 void remove_order();
 void open_door();
@@ -40,9 +41,10 @@ void order_execute();
 void start();
 void flush_order();
 void stop();
-int check_order();
+void stop_state();
+int check_button_pressed();
 void floor_light();
 void last_floor_func();
+// void make_light();
 
-//struct timespec tim = {.tv_sec = 3, .tv_sec = 0};
 

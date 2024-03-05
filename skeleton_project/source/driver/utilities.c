@@ -15,38 +15,26 @@ called_floor c_f;
 
 int last_floor;
 
-// called_floor get_order() // Returns the value and buttontype of a button if one is pressed
-// {
-//     for (int f = 0; f < N_FLOORS; f++)
-//     {
-//         for (int b = 0; b < N_BUTTONS; b++)
-//         {
-//             int btn_pressed = elevio_callButton(f, b);
-//             if (btn_pressed == 1)
-//             {
-//                 c_f.floor = f;
-//                 c_f.button = b;
-//                 return c_f;
-//             }
-//         }
-//     }
-// }
+elevator_states s = START;
 
 void add_order(called_floor c) // Sets the value of the given floor and button to one, thereby placing a order
 {
     int floor = c.floor;
     ButtonType button = c.button;
     ord.order[floor][button] = 1;
+    elevio_buttonLamp(floor,button,1);
 }
 
-int check_order()
+int check_button_pressed()
 {
     for (int f = 0; f < N_FLOORS; f++)
     {
         for (int b = 0; b < N_BUTTONS; b++)
         {
-            if (ord.order[f][b] == 1)
+            if (elevio_callButton(f,b) == 1)
             {
+                c_f.floor = f;
+                c_f.button = b;
                 return 1;
             }
         }
@@ -65,6 +53,7 @@ void remove_order() // Sets the value of the executed order to zero
             for (int b = 0; b < N_BUTTONS; b++)
             {
                 ord.order[f][b] = 0;
+                elevio_buttonLamp(f,b,0);
             }
         }
     }
@@ -114,6 +103,12 @@ void start()
         elevio_motorDirection(DIRN_DOWN);
     }
     elevio_motorDirection(DIRN_STOP);
+}
+
+void stop_state() {
+    if (elevio_stopButton() == 1) {
+        s = STOP;
+    }
 }
 
 void stop()
@@ -174,3 +169,16 @@ void last_floor_func()
         last_floor = elevio_floorSensor();
     }
 }
+
+// void make_light() {
+//     for (int f = 0; f < N_FLOORS; f++)
+//     {
+//         for (int b = 0; b < N_BUTTONS; b++)
+//         {
+//             if (ord.order[f][b] == 1)
+//             {
+//                 elevio_buttonLamp(f,b,1);
+//             }
+//         }
+//     }
+// }

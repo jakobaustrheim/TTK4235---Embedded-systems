@@ -14,15 +14,15 @@ void state_machine(elevator_states state) {
     switch (state)
     {
     case START:
-        printf("State: %u", state);
+        printf("State: %s /n");
         start();
         floor_light();
         state = WAITING;
 
     case WAITING:
-        printf("State: %u", state);
+        printf("State: %s /n");
         floor_light();
-        stop();
+        stop_state();
         for (int f = 0; f < N_FLOORS; f++){
             for (int b = 0; b < N_BUTTONS; b++) {
                 int btn_pressed = elevio_callButton(f, b);
@@ -38,16 +38,14 @@ void state_machine(elevator_states state) {
             }
         }
 
-    case HANDLING_ORDER:
-        printf("State: %u", state);
+    case STOP:
+        printf("State: %s /n");
         stop();
-        elevio_buttonLamp(1,1,1);
-        add_order(c_f);
-        state = MOVING;
-    
+        state = WAITING;
+
     case MOVING:
-        printf("State: %u", state);
-        stop();
+        printf("State: %s /n");
+        stop_state();
         elevio_buttonLamp(2,1,1);
         move();
         state = WAITING;
@@ -61,7 +59,6 @@ void state_machine(elevator_states state) {
 int main()
 {
     elevio_init();
-    elevator_states s = START;
     while(1) {
         state_machine(s);
 
