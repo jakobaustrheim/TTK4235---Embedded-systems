@@ -1,7 +1,9 @@
 #pragma once
 
-extern Order ord; // Creating an instance of the order-matrix
-extern called_floor c_f; 
+#include "elevio.h"
+#include "con_load.h"
+#include "utilities.h"
+
 
 
 void move();

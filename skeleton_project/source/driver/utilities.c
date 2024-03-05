@@ -6,50 +6,37 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#include "elevio.h"
 #include "utilities.h"
-#include "con_load.h"
-#include "move.h"
+
 
 Order ord = {.order = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}}};
 
 called_floor c_f;
 
-called_floor get_order() // Returns the value and buttontype of a button if one is pressed
-{
-    for (int f = 0; f < N_FLOORS; f++)
-    {
-        for (int b = 0; b < N_BUTTONS; b++)
-        {
-            int btn_pressed = elevio_callButton(f, b);
-            if (btn_pressed == 1)
-            {
-                c_f.floor = f;
-                c_f.button = b;
-                return c_f;
-            }
-        }
-    }
-}
+int last_floor;
+
+// called_floor get_order() // Returns the value and buttontype of a button if one is pressed
+// {
+//     for (int f = 0; f < N_FLOORS; f++)
+//     {
+//         for (int b = 0; b < N_BUTTONS; b++)
+//         {
+//             int btn_pressed = elevio_callButton(f, b);
+//             if (btn_pressed == 1)
+//             {
+//                 c_f.floor = f;
+//                 c_f.button = b;
+//                 return c_f;
+//             }
+//         }
+//     }
+// }
 
 void add_order(called_floor c) // Sets the value of the given floor and button to one, thereby placing a order
 {
     int floor = c.floor;
     ButtonType button = c.button;
-
-    for (int f = 0; f < N_FLOORS; f++)
-    {
-        if (f == floor)
-        {
-            for (int b = 0; b < N_BUTTONS; b++)
-            {
-                if (b == button)
-                {
-                    ord.order[f][b] = 1;
-                }
-            }
-        }
-    }
+    ord.order[floor][button] = 1;
 }
 
 int check_order()
@@ -58,7 +45,7 @@ int check_order()
     {
         for (int b = 0; b < N_BUTTONS; b++)
         {
-            if (ord.order[f][b] = 1)
+            if (ord.order[f][b] == 1)
             {
                 return 1;
             }
@@ -69,11 +56,11 @@ int check_order()
 
 void remove_order() // Sets the value of the executed order to zero
 {
-    int current_floor = elevio_floorSensor();
+    last_floor_func();
 
     for (int f = 0; f < N_FLOORS; f++)
     {
-        if (f == current_floor)
+        if (f == last_floor)
         {
             for (int b = 0; b < N_BUTTONS; b++)
             {
@@ -107,8 +94,8 @@ void open_door()
 
 void order_execute()
 {
-    open_door();
     remove_order();
+    open_door();
 }
 
 void start()
@@ -131,7 +118,7 @@ void start()
 
 void stop()
 {
-    if (elevio_stopButton() & elevio_floorSensor() != -1)
+    if (elevio_stopButton() == 1 && elevio_floorSensor() != -1)
     {
         flush_order();
         elevio_stopLamp(1);
@@ -145,7 +132,7 @@ void stop()
         open_door();
     }
 
-    else if (elevio_stopButton())
+    else if (elevio_stopButton() == 1)
     {
         flush_order();
         elevio_stopLamp(1);
@@ -160,7 +147,7 @@ void stop()
 
 void obstruction()
 {
-    if (elevio_floorSensor() != -1 & elevio_obstruction() == 1)
+    if (elevio_floorSensor() != -1 && elevio_obstruction() == 1)
     { // Må legge til funksjonalitet så den første sjekker om døren er åpen
         while (elevio_obstruction() == 1)
         {
@@ -174,17 +161,16 @@ void obstruction()
 void floor_light()
 {
     int floor = elevio_floorSensor();
-    if (floor >= 0 & floor < N_FLOORS)
+    if (floor >= 0 && floor < N_FLOORS)
     {
         elevio_floorIndicator(floor);
     }
 }
 
-int last_floor()
+void last_floor_func()
 {
     if (elevio_floorSensor() != -1)
     {
-        int last_floor = elevio_floorSensor();
+        last_floor = elevio_floorSensor();
     }
-    return last_floor;
 }
