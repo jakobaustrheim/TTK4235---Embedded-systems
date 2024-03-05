@@ -1,11 +1,10 @@
 #pragma once
 
-typedef struct 
+typedef struct Order
 {
     int order[4][3]; //A matrix of four rows representing the four different floors, and thee columns for the three different button-types.
 } Order;
 
-<<<<<<< HEAD
 typedef struct
 {
     int floor;
@@ -19,17 +18,17 @@ typedef enum {
     WAITING,
     STOP,
     OBSTRUCTION,
+    HANDLING_ORDER,
+    DESTINATION,
 
 } elevator_states;
 
-extern Order ord; // Initilizing the matrix with zeroes
-extern called_floor c_f; 
-=======
-extern Order ord; // Initilizing the matrix with zeroes
->>>>>>> 16b71c25ebb6eec5023b6a763266998f61ff525e
+Order ord; // Creating an instance of the order-matrix
+called_floor c_f; 
+
 
 called_floor get_order();
-void add_order();
+void add_order(called_floor c);
 void remove_order();
 void open_door();
 void order_execute();
@@ -38,6 +37,7 @@ void flush_order();
 void stop();
 int check_order();
 void floor_light();
+int last_floor();
 
 //struct timespec tim = {.tv_sec = 3, .tv_sec = 0};
 

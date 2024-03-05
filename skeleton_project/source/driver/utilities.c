@@ -9,17 +9,13 @@
 #include "elevio.h"
 #include "utilities.h"
 #include "con_load.h"
+#include "move.h"
 
 Order ord = {.order = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}}};
 
-<<<<<<< HEAD
 called_floor c_f;
 
-
-called_floor get_order() // Returns the button-type of the pressed button
-=======
-int get_floor() // Returns the value of the pressed button
->>>>>>> 16b71c25ebb6eec5023b6a763266998f61ff525e
+called_floor get_order() // Returns the value and buttontype of a button if one is pressed
 {
     for (int f = 0; f < N_FLOORS; f++)
     {
@@ -36,12 +32,10 @@ int get_floor() // Returns the value of the pressed button
     }
 }
 
-
-void add_order() // Sets the value of the given floor and button to one
+void add_order(called_floor c) // Sets the value of the given floor and button to one, thereby placing a order
 {
-    called_floor c_f = get_order();
-    int floor = c_f.floor;
-    ButtonType button = c_f.button;
+    int floor = c.floor;
+    ButtonType button = c.button;
 
     for (int f = 0; f < N_FLOORS; f++)
     {
@@ -97,44 +91,53 @@ void flush_order()
         {
             ord.order[f][b] = 0;
         }
-
     }
 }
 
-void open_door() {
+void open_door()
+{
     elevio_motorDirection(DIRN_STOP);
     elevio_doorOpenLamp(1);
     for (int _ = 0; _ < 150; _++)
     {
-        //add_order( a,  c);
         nanosleep(&(struct timespec){0, 20 * 1000 * 1000}, NULL);
     }
     elevio_doorOpenLamp(0);
 }
 
-
-void order_execute() {
+void order_execute()
+{
     open_door();
     remove_order();
 }
 
-void start() {
+void start()
+{
     elevio_stopLamp(0);
     elevio_doorOpenLamp(0);
-    while (elevio_floorSensor() == -1)
+    for (int f = 0; f < N_FLOORS; f++)
+    {
+        for (int b = 0; b < N_BUTTONS; b++)
         {
-            elevio_motorDirection(DIRN_DOWN);
+            elevio_buttonLamp(f, b, 0);
         }
-        elevio_motorDirection(DIRN_STOP);
-    
+    }
+    while (elevio_floorSensor() == -1)
+    {
+        elevio_motorDirection(DIRN_DOWN);
+    }
+    elevio_motorDirection(DIRN_STOP);
 }
 
-void stop() {
-    if (elevio_stopButton() & elevio_floorSensor() != -1) {
+void stop()
+{
+    if (elevio_stopButton() & elevio_floorSensor() != -1)
+    {
         flush_order();
         elevio_stopLamp(1);
         elevio_motorDirection(DIRN_STOP);
-        while (elevio_stopButton()) {
+        while (elevio_stopButton())
+        {
             elevio_motorDirection(DIRN_STOP);
             elevio_doorOpenLamp(1);
         }
@@ -142,20 +145,25 @@ void stop() {
         open_door();
     }
 
-    else if (elevio_stopButton()) {
+    else if (elevio_stopButton())
+    {
         flush_order();
         elevio_stopLamp(1);
         elevio_motorDirection(DIRN_STOP);
-        while (elevio_stopButton()) {
+        while (elevio_stopButton())
+        {
             elevio_motorDirection(DIRN_STOP);
         }
         elevio_stopLamp(0);
     }
 }
 
-void obstruction() {
-    if(elevio_floorSensor() != -1 & elevio_obstruction() == 1) { //Må legge til funksjonalitet så den første sjekker om døren er åpen
-        while(elevio_obstruction() == 1) {
+void obstruction()
+{
+    if (elevio_floorSensor() != -1 & elevio_obstruction() == 1)
+    { // Må legge til funksjonalitet så den første sjekker om døren er åpen
+        while (elevio_obstruction() == 1)
+        {
             elevio_motorDirection(DIRN_STOP);
             elevio_doorOpenLamp(1);
         }
@@ -163,10 +171,20 @@ void obstruction() {
     }
 }
 
-void floor_light() {
+void floor_light()
+{
     int floor = elevio_floorSensor();
-    if (floor >= 0 & floor < N_FLOORS) 
+    if (floor >= 0 & floor < N_FLOORS)
     {
         elevio_floorIndicator(floor);
     }
+}
+
+int last_floor()
+{
+    if (elevio_floorSensor() != -1)
+    {
+        int last_floor = elevio_floorSensor();
+    }
+    return last_floor;
 }
