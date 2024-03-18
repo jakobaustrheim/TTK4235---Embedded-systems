@@ -42,4 +42,4 @@ int check_button_pressed();
 void floor_light();
 void last_floor_func();
 void obstruction();
-
+void lights(called_floor c);

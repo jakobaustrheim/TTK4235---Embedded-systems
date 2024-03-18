@@ -22,7 +22,7 @@ void add_order(called_floor c) // Sets the value of the given floor and button t
     int floor = c.floor;
     ButtonType button = c.button;
     ord.order[floor][button] = 1;
-    elevio_buttonLamp(floor,button,1);
+    lights(c);
 }
 
 int check_button_pressed()
@@ -193,4 +193,11 @@ void last_floor_func()
     {
         last_floor = elevio_floorSensor();
     }
+}
+
+void lights(called_floor c)
+{
+    int floor = c.floor;
+    ButtonType button = c.button;
+    elevio_buttonLamp(floor,button,1);
 }
