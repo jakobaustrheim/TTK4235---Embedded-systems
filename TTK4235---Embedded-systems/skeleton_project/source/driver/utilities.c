@@ -8,23 +8,22 @@
 
 #include "utilities.h"
 
-
-Order ord = {.order = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}}};
-
+// Defining the global instances of order, called_floor, last_floor and elevator_states
+Order ord = {.order = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}}}; //Initializing the order matrix with zeroes, hence no orders
 called_floor c_f;
-
 int last_floor;
+elevator_states s = START; //Initialzing the elevator_states as START
 
-elevator_states s = START;
-
-void add_order(called_floor c) // Sets the value of the given floor and button to one, thereby placing a order
+// Sets the value of the given floor and button to one, thereby placing a order. Also makes a call to the lights_on() function
+void add_order(called_floor c) 
 {
     int floor = c.floor;
     ButtonType button = c.button;
     ord.order[floor][button] = 1;
-    lights(c);
+    lights_on(c);
 }
 
+//Bool-function that checks whether a button is pressed by returning 1 while changing the values of the global struct c_f (Called floor)
 int check_button_pressed()
 {
     for (int f = 0; f < N_FLOORS; f++)
@@ -42,7 +41,8 @@ int check_button_pressed()
     return 0;
 }
 
-void remove_order() // Sets the value of the executed order to zero
+// Sets the value of the executed order to zero, while also callin the lights_off() function
+void remove_order() 
 {
     last_floor_func();
 
@@ -53,12 +53,13 @@ void remove_order() // Sets the value of the executed order to zero
             for (int b = 0; b < N_BUTTONS; b++)
             {
                 ord.order[f][b] = 0;
-                elevio_buttonLamp(f,b,0);
+                lights_off(f,b);
             }
         }
     }
 }
 
+//Removes all current orders by giving all the elements in the order matrix the value 0, while also calling the light_off() function
 void flush_order()
 {
     for (int f = 0; f < N_FLOORS; f++)
@@ -66,11 +67,12 @@ void flush_order()
         for (int b = 0; b < N_BUTTONS; b++)
         {
             ord.order[f][b] = 0;
-            elevio_buttonLamp(f,b,0);
+            lights_off(f,b);
         }
     }
 }
 
+//Opens the door for three seconds while also checking for for obstructions and newly placed orders
 void open_door()
 {
     elevio_motorDirection(DIRN_STOP);
@@ -96,12 +98,14 @@ void open_door()
     elevio_doorOpenLamp(0);
 }
 
+//Calls two funtions that will execute the order
 void order_execute()
 {
     remove_order();
     open_door();
 }
 
+//Getting the elevator to a defined start state
 void start()
 {
     elevio_stopLamp(0);
@@ -120,15 +124,10 @@ void start()
     elevio_motorDirection(DIRN_STOP);
 }
 
-void stop_state() {
-    if (elevio_stopButton() == 1) {
-        s = STOP;
-    }
-}
-
+//Stops the elevator given that the stop-button is pressed
 void stop()
 {
-    if (elevio_stopButton() == 1 && elevio_floorSensor() != -1)
+    if (elevio_stopButton() == 1 && elevio_floorSensor() != -1) //If the stop-button is pressed while in a floor
     {
         flush_order();
         elevio_stopLamp(1);
@@ -142,7 +141,7 @@ void stop()
         open_door();
     }
 
-    else if (elevio_stopButton())
+    else if (elevio_stopButton()) //If the stop-button is pressed while inbetween two floors
     {
         flush_order();
         elevio_stopLamp(1);
@@ -162,6 +161,7 @@ void stop()
     }
 }
 
+//Will run if the obstruction latch is high. Checks for the stop-button calls and new orders
 void obstruction()
 {
     while (elevio_obstruction())
@@ -178,6 +178,7 @@ void obstruction()
     }
 }
 
+//Updates the floor_light given the current floor
 void floor_light()
 {
     int floor = elevio_floorSensor();
@@ -187,6 +188,7 @@ void floor_light()
     }
 }
 
+//Updates the global value last_floor. The function makes sure that last_floor only can be changes to a value between 0-3 (defined floors)
 void last_floor_func()
 {
     if (elevio_floorSensor() != -1)
@@ -195,9 +197,15 @@ void last_floor_func()
     }
 }
 
-void lights(called_floor c)
+//Switches the order lights on given a placed order
+void lights_on(called_floor c)
 {
     int floor = c.floor;
     ButtonType button = c.button;
     elevio_buttonLamp(floor,button,1);
+}
+
+//Switches the order lights off given a removed or flushed order
+void lights_off(int floor, ButtonType button) {
+    elevio_buttonLamp(floor,button,0);
 }

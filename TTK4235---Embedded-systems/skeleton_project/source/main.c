@@ -1,3 +1,5 @@
+//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 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -7,8 +9,8 @@
 #include "driver/utilities.h"
 #include "driver/con_load.h"
 
-//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
 
+//Elevator state-machine. Utilizing a switch-case given the elevator-states struct
 void state_machine(elevator_states state) {
 
     switch (state)
@@ -56,7 +58,7 @@ int main()
 {
     elevio_init();
     while(1) {
-        state_machine(s);
+        state_machine(s); //Running the elevator
     }
     return 0;
 }
